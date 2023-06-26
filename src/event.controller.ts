@@ -60,8 +60,5 @@ export class EventController {
   remove(@Param('id') id) {
     //the best pratice is not return anything, exceto o código http 204.
     this.events = this.events.filter((event) => event.id !== parseInt(id));
-    const message = 'Oiii';
-
-    message.toLocaleLowerCase();
   }
 }

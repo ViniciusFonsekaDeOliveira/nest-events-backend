@@ -7,6 +7,8 @@ import {
   Param,
   Body,
   HttpCode,
+  ParseIntPipe,
+  ValidationPipe,
 } from '@nestjs/common';
 import { CreateEventDto } from './create-event-dto';
 import { UpdateEventDto } from './update-event-dto';
@@ -51,15 +53,18 @@ export class EventController {
     });
   }
 
+  // Exploring Pipes Nest Concept in here. As we pass a ParseIntPipe, we can safely add a type for id.
+  // Pipes helps validade all the input coming in our application
   @Get(':id')
-  async findOne(@Param('id') id) {
+  async findOne(@Param('id', ParseIntPipe) id: number) {
     // const event = this.events.find((event) => event.id === parseInt(id));
     // return event;
-    return await this.repository.findOne(id);
+    console.log(typeof id);
+    return await this.repository.findOne({ where: { id: id } });
   }
 
   @Post() //Create Payload
-  async create(@Body() input: CreateEventDto) {
+  async create(@Body(ValidationPipe) input: CreateEventDto) {
     //as you dont know the type, you can create a class dto.
     //Para criar primeiro é necessário converter o payload para corresponder ao tipo de dado que queremos persistir no banco.
     // const event = {
@@ -78,10 +83,10 @@ export class EventController {
   }
 
   @Patch(':id') //Update Payload
-  async update(@Param('id') id, @Body() input: UpdateEventDto) {
+  async update(@Param('id') id, @Body(ValidationPipe) input: UpdateEventDto) {
     //Para atualizar primeiro verifica-se se o elemento está lá. Antes de atualizar no bd, atualiza-se local.
     //Fetch the entity first
-    const event = await this.repository.findOne(id);
+    const event = await this.repository.findOne({ where: { id: id } });
 
     const updatedEvent = {
       ...event,
@@ -100,7 +105,7 @@ export class EventController {
     //the best pratice is not return anything, exceto o código http 204.
     //this.events = this.events.filter((event) => event.id !== parseInt(id));
     //Fetch the entity first
-    const event = await this.repository.findOne(id);
+    const event = await this.repository.findOne({ where: { id: id } });
     await this.repository.remove(event);
   }
 }

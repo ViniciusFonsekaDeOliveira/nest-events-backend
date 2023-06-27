@@ -64,7 +64,7 @@ export class EventController {
   }
 
   @Post() //Create Payload
-  async create(@Body(ValidationPipe) input: CreateEventDto) {
+  async create(@Body() input: CreateEventDto) {
     //as you dont know the type, you can create a class dto.
     //Para criar primeiro é necessário converter o payload para corresponder ao tipo de dado que queremos persistir no banco.
     // const event = {
@@ -83,7 +83,7 @@ export class EventController {
   }
 
   @Patch(':id') //Update Payload
-  async update(@Param('id') id, @Body(ValidationPipe) input: UpdateEventDto) {
+  async update(@Param('id') id, @Body() input: UpdateEventDto) {
     //Para atualizar primeiro verifica-se se o elemento está lá. Antes de atualizar no bd, atualiza-se local.
     //Fetch the entity first
     const event = await this.repository.findOne({ where: { id: id } });

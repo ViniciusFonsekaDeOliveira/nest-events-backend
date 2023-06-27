@@ -87,6 +87,10 @@ export class EventController {
     //Para atualizar primeiro verifica-se se o elemento está lá. Antes de atualizar no bd, atualiza-se local.
     //Fetch the entity first
     const event = await this.repository.findOne({ where: { id: id } });
+    /** AO usar groups, de modo a manter errada a chamada de findOne, as falhas do teste de integração no postman ocorrem como erro 500
+     * acusando when de ser nulo. Isso leva a questionar o validador, porém o questionamento real da nulidade do when se dá por que
+     * event não é recuperado corretamente. Isso afetou outras partes do código, causando confusão na saída dos testes e na depuração.
+     */
 
     const updatedEvent = {
       ...event,

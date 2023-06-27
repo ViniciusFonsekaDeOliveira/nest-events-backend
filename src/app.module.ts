@@ -13,9 +13,16 @@ import { Event } from './event.entity';
       username: 'root',
       password: 'example',
       database: 'nest-events',
+      //Para mapear as entidades, deve-se avisar pra raiz quais entidades serão mapeadas
       entities: [Event],
-      synchronize: true,
+      synchronize: true, //e claro, sincronizar o código com as tabelas do banco.
     }),
+    /* O comando abaixo irá fazer um repositorio para uma entidade específica e disponível, 
+    permitindo que ela seja injetada pelo NestJS neste módulo atual.
+    É preciso fazer isso sempre, pra toda entidade e todo módulo 
+    que precisar injetar essa entidade (repositorio)
+    */
+    TypeOrmModule.forFeature([Event]),
   ],
   controllers: [AppController, EventController],
   providers: [AppService],

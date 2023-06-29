@@ -2,35 +2,52 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Event } from './events/event.entity';
 import { EventsModule } from './events/events.module';
 import { AppJapanService } from './app.japan.service';
 import { AppDummy } from './app.dummy';
 import { ConfigModule } from '@nestjs/config';
+import ormConfig from './config/orm.config';
+import ormConfigProd from './config/orm.config.prod';
 
 @Module({
   imports: [
     //npm i --save @nestjs/config - Twelve-Factor App - Arquivos de configuração para usar o .env
-    ConfigModule.forRoot(), //Sem essa linha, o Nest não consegue ler o arquivo .env na raiz desta aplicação.
+    ConfigModule.forRoot({
+      isGlobal: true,
+      // envFilePath: '.env',
+      load: [ormConfig],
+      expandVariables: true, //permite que seu .env atribua variaveis em si mesmo.
+    }), //Sem essa linha, o Nest não consegue ler o arquivo .env na raiz desta aplicação.
     /** Deve-se colocar um .env file em cada ambiente (dev, test, staging, production) iniciando cada qual com suas respectivas variáveis de ambiente.
      * e então settar TypeORM com essas variáveis de ambiente.
      */
-    //Dynamic Module
-    TypeOrmModule.forRoot({
-      type: 'mysql',
-      host: '127.0.0.1',
-      username: 'root',
-      password: 'example',
-      database: 'nest-events',
-      //Para mapear as entidades, deve-se avisar pra raiz quais entidades serão mapeadas
-      entities: [Event],
-      synchronize: true, //e claro, sincronizar o código com as tabelas do banco.
+    // //Dynamic Module - Plain Configuration Of TypeORM.
+    // TypeOrmModule.forRoot({
+    //   type: 'mysql',
+    //   host: process.env.DB_HOST,
+    //   port: Number(process.env.DB_PORT), //Tenha certeza de que está convertendo para number
+    //   username: process.env.DB_USER,
+    //   password: process.env.DB_PASSWORD,
+    //   database: process.env.DB_NAME,
+    //   //Para mapear as entidades, deve-se avisar pra raiz quais entidades serão mapeadas
+    //   entities: [Event],
+    //   synchronize: true, //e claro, sincronizar o código com as tabelas do banco.
+    // }),
+    // /* O comando abaixo irá fazer um repositorio para uma entidade específica e disponível,
+    // permitindo que ela seja injetada pelo NestJS neste módulo atual.
+    // É preciso fazer isso sempre, pra toda entidade e todo módulo
+    // que precisar injetar essa entidade (repositorio)
+    // */
+
+    //Uma vez criado o arquivo contendo a função que exportará as configurações do TypeORM
+    //e solicitado ao configModule.forRoot para loadar ele é preciso registrá-lo desse novo jeito
+    TypeOrmModule.forRootAsync({
+      //Permite configurar um modulo de forma assincrona. E escolher a configuração correta a ser passada para o módulo principal do Nest de acordo
+      //com o ambiente da aplicação.
+      //useFactory: ormConfig,
+      useFactory:
+        process.env.NODE_ENV !== 'production' ? ormConfig : ormConfigProd,
     }),
-    /* O comando abaixo irá fazer um repositorio para uma entidade específica e disponível, 
-    permitindo que ela seja injetada pelo NestJS neste módulo atual.
-    É preciso fazer isso sempre, pra toda entidade e todo módulo 
-    que precisar injetar essa entidade (repositorio)
-    */
 
     EventsModule,
   ],

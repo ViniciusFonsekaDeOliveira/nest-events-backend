@@ -8,6 +8,7 @@ import {
   Body,
   HttpCode,
   ParseIntPipe,
+  Logger,
 } from '@nestjs/common';
 import { CreateEventDto } from './create-event-dto';
 import { UpdateEventDto } from './update-event-dto';
@@ -17,6 +18,7 @@ import { Like, MoreThan, Repository } from 'typeorm';
 
 @Controller('/event')
 export class EventController {
+  private readonly logger = new Logger(EventController.name); //log, debug, warning, error
   // private events: Event[] = [];
   /** Repositórios possuem 4 métodos principais: find, finOne, save, remove */
   constructor(
@@ -27,7 +29,10 @@ export class EventController {
   @Get()
   async findAll() {
     //return this.events;
-    return await this.repository.find();
+    this.logger.log('Hit the findAll route');
+    const events = await this.repository.find();
+    this.logger.debug(`Foram encontrados ${events.length} eventos`);
+    return events;
   }
 
   // Just playing a little with TypeORM...

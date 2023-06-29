@@ -1,6 +1,6 @@
 import { registerAs } from '@nestjs/config';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
-import { Event } from 'src/events/event.entity';
+import { Event } from '../events/event.entity'; //CAMINHO DA DIST!!
 
 //A criação deste arquivo orm.config (que é uma Factory Function) permite exportar as configurações do TypeORM para diferentes ambientes.
 // export default (): TypeOrmModuleOptions => ({
@@ -25,7 +25,7 @@ export default registerAs(
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     //Para mapear as entidades, deve-se avisar pra raiz quais entidades serão mapeadas
-    entities: [Event], //Garantir que é a classe correta.
+    entities: [Event], //Garantir que é a classe correta e QUE O CAMINHO IMPORTADO VEM DA DIST E NAO DO SRC!!!
     synchronize: false, //TENHA CERTEZA DE QUE ISSO ESTÁ DESABILITADO NO AMBIENTE DE PRODUÇÃO!!!!! Não pode ser true
   }),
 );

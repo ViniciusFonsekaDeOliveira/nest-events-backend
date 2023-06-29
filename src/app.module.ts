@@ -14,7 +14,7 @@ import ormConfigProd from './config/orm.config.prod';
     //npm i --save @nestjs/config - Twelve-Factor App - Arquivos de configuração para usar o .env
     ConfigModule.forRoot({
       isGlobal: true,
-      // envFilePath: '.env',
+      envFilePath: '.env',
       load: [ormConfig],
       expandVariables: true, //permite que seu .env atribua variaveis em si mesmo.
     }), //Sem essa linha, o Nest não consegue ler o arquivo .env na raiz desta aplicação.
